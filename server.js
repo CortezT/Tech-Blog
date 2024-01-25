@@ -11,33 +11,28 @@ const dashboardRoute = require('./routes/dashboardRoute');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-
-app.engine('handlebars', exphbs());
+app.engine('handlebars', exphbs()); 
 app.set('view engine', 'handlebars');
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
 app.use(
     session({
-        secret: process.env.SESSION_SECRET,
+        secret: process.env.SESSION_SECRET || 'default-secret',
         resave: false,
         saveUninitialized: true,
     })
 );
 
-
 app.use(express.static(path.join(__dirname, 'public')));
-
-
-const db = require('./models');
 
 // Routes
 app.use('/', homeRoute);
 app.use('/auth', authRoute);
 app.use('/dashboard', dashboardRoute);
+
+const db = require('./models');
 
 db.sequelize.sync({ force: false }).then(() => {
     app.listen(PORT, () =>
