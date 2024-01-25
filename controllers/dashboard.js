@@ -1,7 +1,12 @@
 const { Post } = require('../models');
 
+function handleDashboardError(error, res) {
+    console.error('Dashboard error:', error);
+    res.status(500).send('Error loading dashboard');
+}
+
 const dashboard = {
-    async getDashboard(req, res) {
+    getDashboard: async (req, res) => {
         try {
             const userId = req.session.userId;
 
@@ -10,10 +15,9 @@ const dashboard = {
             }
 
             const posts = await Post.findAll({ where: { userId } });
-            res.render('dashboard', { posts });
+            return res.render('dashboard', { posts });
         } catch (error) {
-            console.error('Dashboard error:', error);
-            res.status(500).send('Error loading dashboard');
+            handleDashboardError(error, res);
         }
     },
 };
